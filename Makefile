@@ -59,5 +59,3 @@ config-init:
 clean:
 	@echo "  CLEAN: $(BUILD_DIR)"
 	$(Q)$(if $(BUILD_DIR),rm -fR "$(BUILD_DIR)")
-	@echo "  CLEAN: sketch.json"
-	$(Q)rm -f sketch.json
