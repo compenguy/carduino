@@ -23,24 +23,23 @@ DEPS=ArduinoBLE \
      Arduino_LSM6DSOX
 SKETCH=carduino.ino
 SRCS=$(SKETCH)
-
 BIN=$(SKETCH).bin
 
 $(BUILD_DIR)/$(BIN): $(SRCS) sketch.json
 	@echo "  COMPILE: $(SKETCH)"
 	$(Q)$(CLI_TOOL) compile --build-path "$(BUILD_DIR)"
 
-#sketch.json:
-#	@echo "  CONFIG: attach to $(ARDUINO_BOARD)"
-#	$(Q)$(CLI_TOOL) board attach $(ARDUINO_BOARD)
-#	$(Q)$(CLI_TOOL) board attach serial://$(ARDUINO_PORT)
+sketch.json:
+	@echo "  CONFIG: attach to $(ARDUINO_BOARD)"
+	$(Q)$(CLI_TOOL) board attach $(ARDUINO_BOARD)
+	$(Q)$(CLI_TOOL) board attach serial://$(ARDUINO_PORT)
 
 .PHONY: program build check-init config-init clean
-program: build
+program: $(BUILD_DIR)/$(BIN)
 	@echo "  PROGRAM: $(ARDUINO_BOARD)"
 	$(Q)$(CLI_TOOL) upload
 
-build: $(BUILD_DIR)/$(SKETCH).bin
+build: $(BUILD_DIR)/$(BIN)
 
 check-init:
 	@echo "  CONFIG: connected board details"
@@ -59,3 +58,5 @@ config-init:
 clean:
 	@echo "  CLEAN: $(BUILD_DIR)"
 	$(Q)$(if $(BUILD_DIR),rm -fR "$(BUILD_DIR)")
+	@echo "  CLEAN: sketch.json"
+	$(Q)rm -f sketch.json
