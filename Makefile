@@ -20,7 +20,8 @@ ARDUINO_CORE=arduino:mbed_nano
 ARDUINO_BOARD=arduino:mbed_nano:nanorp2040connect
 ARDUINO_PORT=/dev/ttyACM0
 DEPS=ArduinoBLE \
-     Arduino_LSM6DSOX
+     Arduino_LSM6DSOX \
+     WiFiNINA
 SKETCH=carduino.ino
 SRCS=$(SKETCH)
 BIN=$(SKETCH).bin
@@ -37,7 +38,7 @@ sketch.json:
 .PHONY: program build check-init config-init clean
 program: $(BUILD_DIR)/$(BIN)
 	@echo "  PROGRAM: $(ARDUINO_BOARD)"
-	$(Q)$(CLI_TOOL) upload
+	$(Q)$(CLI_TOOL) upload --input-dir $(BUILD_DIR)
 
 build: $(BUILD_DIR)/$(BIN)
 
