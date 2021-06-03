@@ -74,6 +74,7 @@ void loop() {
 	float x = 0.0f, y = 0.0f, z = 0.0f;
 
 	while (car && car.connected()) {
+		uint32_t count = 0;
 		wifinina_digital_write(LEDB, HIGH);
 		wifinina_digital_write(LEDG, LOW);
 
@@ -92,10 +93,24 @@ void loop() {
 		while (car.connected()) {
 			if (IMU.gyroscopeAvailable()) {
 				float dx, dy, dz;
+				char dxbuf[8], xbuf[8], dybuf[8], ybuf[8], dzbuf[8], zbuf[8];
+				char logbuf[56];
 				IMU.readGyroscope(dx, dy, dz);
 				x += dx;
 				y += dy;
 				z += dz;
+				if ((count % 25) == 0) {
+					snprintf(logbuf, sizeof(logbuf), "%7s %7s %7s %7s %7s %7s", "dx", "x", "dy", "y", "dz", "z");
+					Serial.println(logbuf);
+				}
+				snprintf(dxbuf, sizeof(dxbuf), "%+02d.%03d", (int)dx, abs(((int)(dx*100))%100));
+				snprintf(dybuf, sizeof(dybuf), "%+02d.%03d", (int)dy, abs(((int)(dy*100))%100));
+				snprintf(dzbuf, sizeof(dzbuf), "%+02d.%03d", (int)dz, abs(((int)(dz*100))%100));
+				snprintf(xbuf, sizeof(xbuf), "%+04d.%01d", (int)x, abs(((int)(x*10))%10));
+				snprintf(ybuf, sizeof(ybuf), "%+04d.%01d", (int)y, abs(((int)(y*10))%10));
+				snprintf(zbuf, sizeof(zbuf), "%+04d.%01d", (int)z, abs(((int)(z*10))%10));
+				snprintf(logbuf, sizeof(logbuf), "%7s %7s %7s %7s %7s %7s", dxbuf, xbuf, dybuf, ybuf, dzbuf, zbuf);
+				Serial.println(logbuf);
 				// TODO: translate axial rotation into a vehicle command
 				// e.g. 0
 				bleSerial.writeValue((uint8_t)'f');
@@ -106,6 +121,7 @@ void loop() {
 				// that way is down to the controller, which can help 'zero' non-z rotation,
 				// for which no absolute reference exists
 			}
+			count++;
 		}
 	}
 	if (car) {
