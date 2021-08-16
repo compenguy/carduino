@@ -23,7 +23,7 @@ DEPS=ArduinoBLE \
      Arduino_LSM6DSOX \
      WiFiNINA
 SKETCH=carduino.ino
-SRCS=$(SKETCH)
+SRCS=$(SKETCH) bleserial.cpp
 BIN=$(SKETCH).bin
 
 $(BUILD_DIR)/$(BIN): $(SRCS) sketch.json
