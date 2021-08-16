@@ -35,7 +35,8 @@ void setup() {
 	wifinina_digital_write(LEDG, HIGH);
 
 	Serial.begin(9600);
-	while (!Serial);
+	// It's ok if we can't initialize serial - it's only needed for debug logging
+	//while (!Serial);
 
 	// begin initialization
 	if (!BLE.begin()) {
