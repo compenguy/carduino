@@ -112,15 +112,7 @@ void loop() {
 				snprintf(zbuf, sizeof(zbuf), "%+04d.%01d", (int)z, abs(((int)(z*10))%10));
 				snprintf(logbuf, sizeof(logbuf), "%7s %7s %7s %7s %7s %7s", dxbuf, xbuf, dybuf, ybuf, dzbuf, zbuf);
 				Serial.println(logbuf);
-				// TODO: translate axial rotation into a vehicle command
-				// e.g. 0
-				bleSerial.writeValue((uint8_t)'f');
-				// TODO: add a button or some kind of signal to reset orientation, to counteract drift
-				// accelerometer is capable of detecting motion gestures - figure out how to make it respond to a
-				// 'tap' or 'shake' gesture.
-				// Additionally, calculate the axis along which 1G acceleration is being experienced
-				// that way is down to the controller, which can help 'zero' non-z rotation,
-				// for which no absolute reference exists
+				translateInput(bleSerial, x, dx, y, dy, z, dz);
 			}
 			count++;
 		}
@@ -160,4 +152,16 @@ void blePeripheralConnectHandler(BLEDevice central) {
 void blePeripheralDisconnectHandler(BLEDevice central) {
 	Serial.println("Disconnected!");
 	BLE.scanForUuid(BLE_SVC_UUID_SHORT, false);
+}
+
+void translateInput(BLECharacteristic &ser, float &x, float &dx, float &y, float &dy, float &z, float &dz) {
+	// TODO: translate axial rotation into a vehicle command
+	// e.g. 0
+	bleSerial.writeValue((uint8_t)'f');
+	// TODO: add a button or some kind of signal to reset orientation, to counteract drift
+	// accelerometer is capable of detecting motion gestures - figure out how to make it respond to a
+	// 'tap' or 'shake' gesture.
+	// Additionally, calculate the axis along which 1G acceleration is being experienced
+	// that way is down to the controller, which can help 'zero' non-z rotation,
+	// for which no absolute reference exists
 }
