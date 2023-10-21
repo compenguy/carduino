@@ -1,33 +1,21 @@
 // ArduinoBLE - Version: Latest
 // WiFiNINA - Version: Latest
-#include <WiFiNINA.h>
-#include <utility/wifi_drv.h>
 
 // Arduino_LSM6DSOX - Version: Latest
 #include <Arduino_LSM6DSOX.h>
 
 #include "bleserial.h"
+#include "ninaled.h"
 
 BLESerial car;
-
-// The wifinina functions send the relevant commands to the nina module over SPI
-void wifinina_pin_mode(NinaPin pin, PinMode mode) {
-	WiFiDrv::pinMode(pin.get(), (uint8_t)mode);
-}
-
-void wifinina_digital_write(NinaPin pin, PinStatus value) {
-	WiFiDrv::digitalWrite(pin.get(), (uint8_t)value);
-}
+NinaLed nina_red(LEDR);
+NinaLed nina_green(LEDG);
+NinaLed nina_blue(LEDB);
 
 void setup() {
-	wifinina_pin_mode(LEDR, OUTPUT);
-	wifinina_pin_mode(LEDG, OUTPUT);
-	wifinina_pin_mode(LEDB, OUTPUT);
-
-	// NOTE: wifinina gpio access to LEDs is active-low
-	wifinina_digital_write(LEDR, LOW);
-	wifinina_digital_write(LEDB, HIGH);
-	wifinina_digital_write(LEDG, HIGH);
+	nina_red.on();
+	nina_green.off();
+	nina_blue.off();
 
 	Serial.begin(9600);
 	// It's ok if we can't initialize serial - it's only needed for debug logging
@@ -48,8 +36,8 @@ void setup() {
 		while (1);
 	}
 
-	wifinina_digital_write(LEDR, HIGH);
-	wifinina_digital_write(LEDB, LOW);
+	nina_red.off();
+	nina_blue.on();
 
 	Serial.println("Scanning for supported device(s)");
 
@@ -64,11 +52,11 @@ void loop() {
 
 	while (car.connected()) {
 		uint32_t count = 0;
-		wifinina_digital_write(LEDB, HIGH);
-		wifinina_digital_write(LEDG, LOW);
+		nina_blue.off();
+		nina_green.on();
 
 		Serial.println("Connected to remote device.");
-        if (!car.open()) {
+		if (!car.open()) {
 			Serial.println("Error attaching to the serial characteristic of the remote device.");
 			break;
 		}
@@ -99,12 +87,12 @@ void loop() {
 		}
 	}
 	if (car.connected()) {
-		wifinina_digital_write(LEDB, LOW);
-		wifinina_digital_write(LEDG, HIGH);
+		nina_blue.on();
+		nina_green.off();
 	} else {
 		Serial.println("Sleeping while waiting for a connection...");
 		delay(1000);
-        car.connect();
+		car.connect();
 	}
 }
 
